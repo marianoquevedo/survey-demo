@@ -1,6 +1,6 @@
 'use strict';
 
-//const Schema = require('./schema');
+const Schema = require('./schema');
 
 module.exports = (handlers) => [
     {
@@ -10,6 +10,13 @@ module.exports = (handlers) => [
             handler: async (request, h) => {
 
                 return handlers.getSurveys(request, h);
+            },
+            response: {
+                schema: Schema.outputs.getSurveys,
+                modify: true,
+                options: {
+                    stripUnknown: true
+                }
             }
         }
     },
@@ -17,9 +24,19 @@ module.exports = (handlers) => [
         method: 'POST',
         path: '/surveys',
         config: {
+            validate: {
+                payload: Schema.inputs.createSurveys
+            },
             handler: async (request, h) => {
-
+                
                 return handlers.createSurvey(request, h);
+            },
+            response: {
+                schema: Schema.outputs.createSurvey,
+                modify: true,
+                options: {
+                    stripUnknown: true
+                }
             }
         }
     }
