@@ -4,9 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
-    "migrations:up": "db-migrate up --config config/database.json -e local",
-    "migrations:down": "db-migrate down --config config/database.json -e local",
+    "start": "node lib/index.js",
+    "migrations:up": "db-migrate up --config config/migrations.json -e local",
+    "migrations:down": "db-migrate down --config config/migrations.json -e local",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
