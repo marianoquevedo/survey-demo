@@ -1,0 +1,51 @@
+version: '3'
+services:
+  postgres:
+    image: postgres:latest
+    volumes:
+    - pg_data:/var/lib/postgresql/data
+    restart: always
+    ports:
+    - "5432:5432"
+    environment:
+      POSTGRES_DB: local
+      POSTGRES_USER: local
+      POSTGRES_PASSWORD: local
+
+  migration:
+    image: node:10.12.0
+    command: ["npm", "run", "migrations:up"]
+    build:
+      context: ./simple-survey
+      dockerfile: Dockerfile.migration
+    depends_on:
+      - postgres
+    environment:
+      PORT: 3000
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: local
+      POSTGRES_USER: local
+      POSTGRES_PASSWORD: local
+
+  api_simple_survey:
+    image: node:10.12.0
+    build:
+      context: ./simple-survey
+      dockerfile: Dockerfile
+    restart: always
+    depends_on:
+      - postgres
+      - migration
+    ports:
+      - "3000:3000"
+    environment:
+      PORT: 3000
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: local
+      POSTGRES_USER: local
+      POSTGRES_PASSWORD: local
+volumes:
+  pg_data:
+    driver: local

@@ -4,7 +4,6 @@ const Hapi = require('hapi');
 
 // Create a server with a host and port
 const server = Hapi.server({
-    host: 'localhost',
     port: process.env.PORT
 });
 
@@ -17,13 +16,13 @@ async function start() {
         await server.register({
             plugin: require('hapi-pino'),
             options: {
-                prettyPrint: false,
+                prettyPrint: true,
                 logEvents: ['response']
             }
         });
 
         await server.register({
-            plugin: require('./lib/modules/db'),
+            plugin: require('./modules/db'),
             options: {
                 pg: {
                     host: process.env.POSTGRES_HOST,
@@ -35,7 +34,7 @@ async function start() {
                 }
             }
         });
-        await server.register(require('./lib/modules/surveys'));
+        await server.register(require('./modules/surveys'));
 
         await server.start();
     }

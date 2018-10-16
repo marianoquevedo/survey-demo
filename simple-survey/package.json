@@ -1,8 +1,9 @@
 {
   "name": "simple-survey",
+  "description": "simple-survey service",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "repository": "https://github.com/marianoquevedo/survey-demo",
+  "main": "lib/index.js",
   "scripts": {
     "start": "node lib/index.js",
     "migrations:up": "db-migrate up --config config/migrations.json -e local",
