@@ -10,7 +10,7 @@ module.exports = (db) => {
 
     const getSurveys = async (request, h) => {
 
-        const surveys = await this.db.survey.find({}, { limit: internals.SURVEY_LIMIT });
+        const surveys = await this.db.survey.find({}, { order: "id desc", limit: internals.SURVEY_LIMIT });
 
         const surveysWithQuestionsPromises = surveys.map((s) => {
             return this.db.question.find({ survey_id: s.id }, { fields: ['id', 'text']}).then((questions) => {
