@@ -1,6 +1,6 @@
 {
-  "name": "api-simple-survey",
-  "description": "simple-survey service",
+  "name": "api-dashboard",
+  "description": "dashboard service",
   "version": "1.0.0",
   "repository": "https://github.com/marianoquevedo/survey-demo",
   "main": "lib/index.js",
@@ -14,6 +14,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "axios": "^0.18.0",
     "db-migrate": "^0.11.3",
     "db-migrate-pg": "^0.4.0",
     "hapi": "^17.6.0",

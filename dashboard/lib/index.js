@@ -35,7 +35,12 @@ async function start() {
                 }
             }
         });
-        await server.register(require('./modules/surveys'));
+        await server.register({
+            plugin: require('./modules/aggregator'),
+            options: {
+                simpleSurveyUrl: process.env.SIMPLE_SURVEY_URL
+            }
+        });
 
         await server.start();
     }
