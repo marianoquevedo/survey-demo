@@ -16,7 +16,7 @@ services:
   api_simple_migration:
     command: ["npm", "run", "migrations:up"]
     build:
-      context: ./simple-survey
+      context: ./api-simple-survey
       dockerfile: Dockerfile.migration
     depends_on:
       - database
@@ -29,7 +29,7 @@ services:
 
   api_simple_survey:
     build:
-      context: ./simple-survey
+      context: ./api-simple-survey
       dockerfile: Dockerfile
     restart: always
     depends_on:
@@ -48,7 +48,7 @@ services:
   api_dashboard_migration:
     command: ["npm", "run", "migrations:up"]
     build:
-      context: ./dashboard
+      context: ./api-dashboard
       dockerfile: Dockerfile.migration
     depends_on:
       - database
@@ -61,7 +61,7 @@ services:
 
   api_dashboard:
     build:
-      context: ./dashboard
+      context: ./api-dashboard
       dockerfile: Dockerfile
     restart: always
     depends_on:
