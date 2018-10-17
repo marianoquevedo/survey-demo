@@ -1,51 +1,83 @@
 version: '3'
 services:
-  postgres:
-    image: postgres:latest
+  database:
+    build:
+      context: ./database
+      dockerfile: Dockerfile
     volumes:
     - pg_data:/var/lib/postgresql/data
     restart: always
     ports:
     - "5432:5432"
     environment:
-      POSTGRES_DB: local
       POSTGRES_USER: local
       POSTGRES_PASSWORD: local
-
-  migration:
-    image: node:10.12.0
+  
+  api_simple_migration:
     command: ["npm", "run", "migrations:up"]
     build:
       context: ./simple-survey
       dockerfile: Dockerfile.migration
     depends_on:
-      - postgres
+      - database
     environment:
-      PORT: 3000
-      POSTGRES_HOST: postgres
+      POSTGRES_HOST: database
       POSTGRES_PORT: 5432
-      POSTGRES_DB: local
+      POSTGRES_DB: survey
       POSTGRES_USER: local
       POSTGRES_PASSWORD: local
 
   api_simple_survey:
-    image: node:10.12.0
     build:
       context: ./simple-survey
       dockerfile: Dockerfile
     restart: always
     depends_on:
-      - postgres
-      - migration
+      - database
+      - api_simple_migration
     ports:
       - "3000:3000"
     environment:
       PORT: 3000
-      POSTGRES_HOST: postgres
+      POSTGRES_HOST: database
       POSTGRES_PORT: 5432
-      POSTGRES_DB: local
+      POSTGRES_DB: survey
       POSTGRES_USER: local
       POSTGRES_PASSWORD: local
+
+  api_dashboard_migration:
+    command: ["npm", "run", "migrations:up"]
+    build:
+      context: ./dashboard
+      dockerfile: Dockerfile.migration
+    depends_on:
+      - database
+    environment:
+      POSTGRES_HOST: database
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: dashboard
+      POSTGRES_USER: local
+      POSTGRES_PASSWORD: local
+
+  api_dashboard:
+    build:
+      context: ./dashboard
+      dockerfile: Dockerfile
+    restart: always
+    depends_on:
+      - api_simple_survey
+      - api_dashboard_migration
+    ports:
+      - "3001:3000"
+    environment:
+      PORT: 3000
+      POSTGRES_HOST: database
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: dashboard
+      POSTGRES_USER: local
+      POSTGRES_PASSWORD: local
+      INTERVAL_SECONDS: 10
+      SIMPLE_SURVEY_URL: http://api_simple_survey:3000
 volumes:
   pg_data:
     driver: local
