@@ -47,34 +47,41 @@ module.exports = (db) => {
         const payload = request.payload;
         const surveyId = request.params.id;
 
-        console.log(surveyId);
+        const newResponse =  await this.db.survey_response.insert({
+            survey_id: surveyId,
+            country: payload.country
+        });
 
-        try {
-
-            const newResponse =  await this.db.survey_response.insert({
-                survey_id: surveyId,
-                country: payload.country
+        const responsesPromises = payload.responses.map((r) => {
+            return this.db.question_response.insert({
+                survey_response_id: newResponse.id,
+                question_id: r.questionId,
+                text: r.text
             });
+        });
 
-            const responsesPromises = payload.responses.map((r) => {
-                return this.db.question_response.insert({
-                    survey_response_id: newResponse.id,
-                    question_id: r.questionId,
-                    text: r.text
-                });
-            });
-
-            newResponse.responses = await Promise.all(responsesPromises);
-            return h.response(newResponse).code(201);
-
-        } catch (error) {
-            console.log(error);
-        }
+        newResponse.responses = await Promise.all(responsesPromises);
+        return h.response(newResponse).code(201);
     }
+
+    const exportSurveys = async (request, h) => {
+
+        const surveyResponses = await this.db.survey_response.find({});
+        
+        const surveysWithResponsesPromises = surveyResponses.map((s) => {
+            return this.db.question_response.find({ survey_response_id: s.id }).then((responses) => {
+                s.responses = responses;
+                return s;
+            });
+        });
+
+        return await Promise.all(surveysWithResponsesPromises);
+    };
 
     return {
         getSurveys,
         createSurvey,
-        respondSurvey
+        respondSurvey,
+        exportSurveys
     }
 }

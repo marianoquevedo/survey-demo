@@ -59,6 +59,23 @@ module.exports = (handlers) => [
                 }
             }
         }
-    }
+    },
+    {
+        method: 'GET',
+        path: '/surveys/export',
+        config: {
+            handler: async (request, h) => {
+
+                return handlers.exportSurveys(request, h);
+            },
+            response: {
+                schema: Schema.outputs.export,
+                modify: true,
+                options: {
+                    stripUnknown: true
+                }
+            }
+        }
+    },
 ];
 

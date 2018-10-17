@@ -41,5 +41,13 @@ exports.outputs = {
         id: Joi.number(),
         country: Joi.string().max(80),
         responses: Joi.array().items(internals.response.keys({ id: Joi.number() }))
-    })
+    }),
+    export: Joi.array().items(Joi.object({
+        id: Joi.number(),
+        country: Joi.string().max(80),
+        responses: Joi.array().items(internals.response.keys({ 
+            id: Joi.number(),
+            question_id: Joi.number()
+        }))
+    }))
 };
