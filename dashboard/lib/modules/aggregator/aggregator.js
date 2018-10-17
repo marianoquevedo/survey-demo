@@ -1,44 +1,35 @@
 'use strict';
 
-const internals = {
-    INTERVAL_SECONDS: 1000 * 1 
-}
-
-module.exports = (db, surveyClient) => {
+module.exports = (intervalSeconds, db, surveyClient) => {
 
     this.db = db;
     this.surveyClient = surveyClient;
+    this.interval = 1000 * intervalSeconds;
 
     const start = () => {
-        setInterval(aggregate, internals.INTERVAL_SECONDS)
+
+        setInterval(aggregate, this.interval)
     }
 
     const aggregate = async () => {
 
-        // call the simple survey service to get the data
-        const simpleSurveys = await getData();
+        console.log('running aggregator');
 
-        // save the data to the DB
+        const simpleSurveys = await getData();
         const surveyPromises = simpleSurveys.map((s) => {
+
             return this.db.simple_survey.insert({
                 simple_survey_id: s.id,
-                title: s.title,
-                description: s.description
-            }).then(() => {
-
-                const questionsPromises = s.questions.map((q) => {
-                    return this.db.simple_question.insert({
-                        simple_survey_id: s.id,
-                        simple_question_id: q.id,
-                        text: q.text
-                    })
-                });
-
-                return Promise.all(questionsPromises);
+                payload: s
+            }, {
+                onConflictIgnore: true
             });
         });
+        
+        await Promise.all(surveyPromises);
+        console.log(`aggregator finished - processed ${simpleSurveys.length} records`);
 
-        return await Promise.all(surveyPromises);
+        return;
     }
 
     const getData = async () => {

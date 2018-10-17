@@ -38,6 +38,7 @@ async function start() {
         await server.register({
             plugin: require('./modules/aggregator'),
             options: {
+                intervalSeconds: process.env.INTERVAL_SECONDS,
                 simpleSurveyUrl: process.env.SIMPLE_SURVEY_URL
             }
         });

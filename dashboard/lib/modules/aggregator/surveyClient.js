@@ -7,10 +7,7 @@ module.exports = (config, axios) => {
 
     const getSurveys = () => {
 
-        const url = `${config.simpleSurveyUrl}/surveys`
-
-        console.log(url);
-
+        const url = `${config.simpleSurveyUrl}/surveys/export`;
         return this.axios.get(url);
     }
 

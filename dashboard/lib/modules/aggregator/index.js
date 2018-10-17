@@ -11,7 +11,7 @@ exports.plugin = {
         const db = server.db;
         const surveyClient = SurveyClient(options, Axios)
 
-        const aggregator = Aggregator(db, surveyClient);
+        const aggregator = Aggregator(options.intervalSeconds, db, surveyClient);
         aggregator.start();
     },
     name: 'surveys'
