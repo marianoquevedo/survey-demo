@@ -1,16 +1,16 @@
 'use strict';
 
-class Handlers {
+const internals = {
+    SURVEY_LIMIT: 15
+}
 
-    constructor(db) {
+module.exports = (db) => {
 
-        this.db = db;
-        this.SURVEY_LIMIT = 15;
-    }
+    this.db = db;
 
-    async getSurveys(request, h) {
+    const getSurveys = async (request, h) => {
 
-        const surveys = await this.db.survey.find({}, { limit: this.SURVEY_LIMIT });
+        const surveys = await this.db.survey.find({}, { limit: internals.SURVEY_LIMIT });
 
         const surveysWithQuestionsPromises = surveys.map((s) => {
             return this.db.question.find({ survey_id: s.id }, { fields: ['id', 'text']}).then((questions) => {
@@ -20,9 +20,9 @@ class Handlers {
         });
 
         return await Promise.all(surveysWithQuestionsPromises);
-    }
+    };
 
-    async createSurvey(request, h) {
+    const createSurvey = async (request, h) => {
 
         const payload = request.payload;
 
@@ -41,6 +41,40 @@ class Handlers {
         newSurvey.questions = await Promise.all(questionsPromises);
         return h.response(newSurvey).code(201);
     }
-}
 
-module.exports = Handlers;
+    const respondSurvey = async (request, h) => {
+
+        const payload = request.payload;
+        const surveyId = request.params.id;
+
+        console.log(surveyId);
+
+        try {
+
+            const newResponse =  await this.db.survey_response.insert({
+                survey_id: surveyId,
+                country: payload.country
+            });
+
+            const responsesPromises = payload.responses.map((r) => {
+                return this.db.question_response.insert({
+                    survey_response_id: newResponse.id,
+                    question_id: r.questionId,
+                    text: r.text
+                });
+            });
+
+            newResponse.responses = await Promise.all(responsesPromises);
+            return h.response(newResponse).code(201);
+
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    return {
+        getSurveys,
+        createSurvey,
+        respondSurvey
+    }
+}

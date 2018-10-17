@@ -39,6 +39,26 @@ module.exports = (handlers) => [
                 }
             }
         }
+    },
+    {
+        method: 'POST',
+        path: '/surveys/{id}/response',
+        config: {
+            validate: {
+                payload: Schema.inputs.respondSurvey
+            },
+            handler: async (request, h) => {
+                
+                return handlers.respondSurvey(request, h);
+            },
+            response: {
+                schema: Schema.outputs.respondSurvey,
+                modify: true,
+                options: {
+                    stripUnknown: true
+                }
+            }
+        }
     }
 ];
 

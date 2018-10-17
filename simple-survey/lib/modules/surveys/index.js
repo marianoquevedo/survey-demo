@@ -9,7 +9,7 @@ exports.plugin = {
 
         const db = server.db;
 
-        const handlers = new Handlers(db);
+        const handlers = Handlers(db);
         server.route(Routes(handlers));
     },
     name: 'surveys'

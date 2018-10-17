@@ -13,10 +13,18 @@ internals.survey = Joi.object({
     description: Joi.string().max(250)
 });
 
+internals.response = Joi.object({
+    questionId: Joi.number(),
+    text: Joi.string().max(250)
+});
 
 exports.inputs = {
     createSurvey: internals.survey.keys({
         questions: Joi.array().items(internals.question)
+    }),
+    respondSurvey: Joi.object({
+        country: Joi.string().max(80),
+        responses: Joi.array().items(internals.response)
     })
 };
 
@@ -28,5 +36,10 @@ exports.outputs = {
     createSurvey: internals.survey.keys({
         id: Joi.number(),
         questions: Joi.array().items(internals.question.keys({ id: Joi.number() }))
+    }),
+    respondSurvey: Joi.object({
+        id: Joi.number(),
+        country: Joi.string().max(80),
+        responses: Joi.array().items(internals.response.keys({ id: Joi.number() }))
     })
 };
